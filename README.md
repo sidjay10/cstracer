@@ -9,9 +9,9 @@ It's neither fast nor safe to use. You have been warned!
 ## Compiling
 See the original Valgrind [README](README) for instructions on building valgrind.
 
-In the valgrind directory, create a directory named cstracer containing the files in this repository  
-To the file Makefile.am in the valgrind directory, add cstracer to the variable named TOOLS  
-To the file configure.in in the valgrind directory, add cstracer/Makefile and cstracer/tests/Makefile to AC\_CONFIG\_FILES  
+In the valgrind directory, create a directory named `cstracer` containing the files in this repository  
+To the file Makefile.am in the valgrind directory, add `cstracer` to the variable named `TOOLS`  
+To the file configure.in in the valgrind directory, add `cstracer/Makefile` and `cstracer/tests/Makefile` to `AC\_CONFIG\_FILES`  
 
 In the valgrind directory, run the following commands  
 
@@ -33,9 +33,9 @@ The traces are written to a file named tracefile
 
 ## Options
 
---trace-file=<filename> The name of the output file  
---skip=<num>	Number of initital instructions to skip  
---trace=<num>	Number of instructions to trace  
+`--trace-file=<filename>` The name of the output file  
+`--skip=<num>`	Number of initital instructions to skip  
+`--trace=<num>`	Number of instructions to trace  
 
 ## Contact
 Author: Siddharth Jayashankar <sidjay@iitk.ac.in>
