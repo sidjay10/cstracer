@@ -1,0 +1,64 @@
+<?xml version="1.0"?> <!-- -*- sgml -*- -->
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+
+<chapter id="ct-manual" xreflabel="CSTracer">
+
+<title>Tracegen: Generate instruction and data traces</title>
+
+<para>To use this tool, you must specify
+<option>--tool=cstracer</option> on the Valgrind
+command line.</para>
+
+
+<sect1 id="ct-manual.overview" xreflabel="Overview">
+<title>Overview</title>
+
+<para>Generate traces for ChampSim.</para>
+
+</sect1>
+
+
+<sect1 id="tg-manual.options" xreflabel="Tracegen Command-line Options">
+<title>Tracegen Command-line Options</title>
+
+<para>Tracegen-specific command-line options are:</para>
+
+<!-- start of xi:include in the manpage -->
+<variablelist id="ct.opts.list">
+  <varlistentry id="opt.file" xreflabel="--trace-file">
+    <term>
+    <option><![CDATA[--trace-file=<filename> [default: tracefile] ]]></option>
+    </term>
+    <listitem>
+      <para>Name of the file the traces are written to
+      <option>--trace-file=name [default = tracefile] </option></para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry id="opt.skip" xreflabel="--skip">
+    <term>
+    <option><![CDATA[--skip=<num> [default: 0] ]]></option>
+    </term>
+    <listitem>
+      <para>Number of Instructions to Skip</para>
+      <option>--trace=#num [default = 0] </option></para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry id="opt.trace" xreflabel="--trace">
+    <term>
+      <option><![CDATA[--trace=<num> [default: 1000] ]]></option>
+    </term>
+    <listitem>
+      <para>Number of instructions to trace 
+      <option>--trace=#num [default = 1000] </option></para>
+    </listitem>
+  </varlistentry>
+
+</variablelist>
+<!-- end of xi:include in the manpage -->
+
+</sect1>
+
+</chapter>

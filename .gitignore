@@ -1,0 +1,7 @@
+!Makefile.am
+!*.c
+!*.h
+
+*.Po
+*.o
+
