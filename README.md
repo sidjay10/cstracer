@@ -11,7 +11,7 @@ See the original Valgrind [README](README) for instructions on building valgrind
 
 In the valgrind directory, create a directory named `cstracer` containing the files in this repository  
 To the file Makefile.am in the valgrind directory, add `cstracer` to the variable named `TOOLS`  
-To the file configure.in in the valgrind directory, add `cstracer/Makefile` and `cstracer/tests/Makefile` to `AC\_CONFIG\_FILES`  
+To the file configure.in in the valgrind directory, add `cstracer/Makefile` and `cstracer/tests/Makefile` to `AC_CONFIG_FILES`  
 
 In the valgrind directory, run the following commands  
 
@@ -26,7 +26,7 @@ make install
 To generate a data and program trace from `YOUR_APPLICATION`, run
 
 ~~~
-<path to valgrind>/valgrind --tool=cstracer YOUR_APPLICATION
+<path to valgrind>/valgrind --tool=cstracer --trace-file=tracefile --trace=1000 --skip=10 YOUR_APPLICATION
 ~~~
 
 The traces are written to a file named tracefile
