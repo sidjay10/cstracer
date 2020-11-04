@@ -110,8 +110,8 @@ host_triplet = x86_64-pc-linux-gnu
 ##am__append_4 = -Wl,-z,noexecstack
 noinst_PROGRAMS = cstracer-amd64-linux$(EXEEXT) \
 	$(am__EXEEXT_1)
-#am__append_5 = cstracer--linux
-cstracer__linux_DEPENDENCIES =
+am__append_5 = cstracer-x86-linux
+#cstracer_x86_linux_DEPENDENCIES =
 subdir = cstracer
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -123,20 +123,20 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-#am__EXEEXT_1 = cstracer--linux$(EXEEXT)
+am__EXEEXT_1 = cstracer-x86-linux$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am__objects_1 =  \
 	cstracer_amd64_linux-ct_main.$(OBJEXT)
 am_cstracer_amd64_linux_OBJECTS = $(am__objects_1)
 cstracer_amd64_linux_OBJECTS =  \
 	$(am_cstracer_amd64_linux_OBJECTS)
-am__cstracer__linux_SOURCES_DIST = ct_main.c
+am__cstracer_x86_linux_SOURCES_DIST = ct_main.c
 am__objects_2 =  \
-	cstracer__linux-ct_main.$(OBJEXT)
-#am_cstracer__linux_OBJECTS =  \
-#	$(am__objects_2)
-cstracer__linux_OBJECTS =  \
-	$(am_cstracer__linux_OBJECTS)
+	cstracer_x86_linux-ct_main.$(OBJEXT)
+am_cstracer_x86_linux_OBJECTS =  \
+	$(am__objects_2)
+cstracer_x86_linux_OBJECTS =  \
+	$(am_cstracer_x86_linux_OBJECTS)
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -170,9 +170,9 @@ am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(cstracer_amd64_linux_SOURCES) \
-	$(cstracer__linux_SOURCES)
+	$(cstracer_x86_linux_SOURCES)
 DIST_SOURCES = $(cstracer_amd64_linux_SOURCES) \
-	$(am__cstracer__linux_SOURCES_DIST)
+	$(am__cstracer_x86_linux_SOURCES_DIST)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -216,7 +216,7 @@ ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = $(SUBDIRS)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/Makefile.all.am \
-	$(top_srcdir)/Makefile.tool.am $(top_srcdir)/depcomp
+	$(top_srcdir)/Makefile.tool.am $(top_srcdir)/depcomp README
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -243,13 +243,13 @@ am__relativize = \
     dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
   done; \
   reldir="$$dir2"
-ACLOCAL = ${SHELL} /home/sidjay/valgrind-tracegen/missing aclocal-1.15
+ACLOCAL = ${SHELL} /home/anish/qualcomm/valgrind-tracegen/missing aclocal-1.15
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = /usr/bin/ar
-AUTOCONF = ${SHELL} /home/sidjay/valgrind-tracegen/missing autoconf
-AUTOHEADER = ${SHELL} /home/sidjay/valgrind-tracegen/missing autoheader
-AUTOMAKE = ${SHELL} /home/sidjay/valgrind-tracegen/missing automake-1.15
+AUTOCONF = ${SHELL} /home/anish/qualcomm/valgrind-tracegen/missing autoconf
+AUTOHEADER = ${SHELL} /home/anish/qualcomm/valgrind-tracegen/missing autoheader
+AUTOMAKE = ${SHELL} /home/anish/qualcomm/valgrind-tracegen/missing automake-1.15
 AWK = mawk
 BOOST_CFLAGS = 
 BOOST_LIBS = 
@@ -334,7 +334,7 @@ LIB_UBSAN =
 LN_S = ln -s
 LTLIBOBJS = 
 MAINT = #
-MAKEINFO = ${SHELL} /home/sidjay/valgrind-tracegen/missing makeinfo
+MAKEINFO = ${SHELL} /home/anish/qualcomm/valgrind-tracegen/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 MPI_CC = mpicc
 OBJEXT = o
@@ -355,19 +355,19 @@ SHELL = /bin/bash
 SOLARIS_UNDEF_LARGESOURCE = 
 STRIP = 
 VALT_LOAD_ADDRESS_PRI = 0x38000000
-VALT_LOAD_ADDRESS_SEC = 0xUNSET
+VALT_LOAD_ADDRESS_SEC = 0x38000000
 VERSION = 3.12.0.SVN
 VGCONF_ARCH_PRI = amd64
-VGCONF_ARCH_SEC = 
+VGCONF_ARCH_SEC = x86
 VGCONF_OS = linux
 VGCONF_PLATFORM_PRI_CAPS = AMD64_LINUX
-VGCONF_PLATFORM_SEC_CAPS = 
+VGCONF_PLATFORM_SEC_CAPS = X86_LINUX
 VGCONF_PLATVARIANT = vanilla
 VG_TMPDIR = /tmp
-abs_builddir = /home/sidjay/valgrind-tracegen/cstracer
-abs_srcdir = /home/sidjay/valgrind-tracegen/cstracer
-abs_top_builddir = /home/sidjay/valgrind-tracegen
-abs_top_srcdir = /home/sidjay/valgrind-tracegen
+abs_builddir = /home/anish/qualcomm/valgrind-tracegen/cstracer
+abs_srcdir = /home/anish/qualcomm/valgrind-tracegen/cstracer
+abs_top_builddir = /home/anish/qualcomm/valgrind-tracegen
+abs_top_srcdir = /home/anish/qualcomm/valgrind-tracegen
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -395,7 +395,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/sidjay/valgrind-tracegen/install-sh
+install_sh = ${SHELL} /home/anish/qualcomm/valgrind-tracegen/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -404,7 +404,7 @@ mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /home/sidjay/valgrind-tracegen/inst
+prefix = /home/anish/qualcomm/valgrind-tracegen/inst
 program_transform_name = s,x,x,
 psdir = ${docdir}
 runstatedir = ${localstatedir}/run
@@ -465,15 +465,15 @@ AM_CPPFLAGS_AMD64_LINUX = \
 	-DVGP_amd64_linux=1 \
 	-DVGPV_amd64_linux_vanilla=1
 
-#AM_CPPFLAGS_ = \
-#	-I$(top_srcdir) \
-#	-I$(top_srcdir)/include \
-#	-I$(top_srcdir)/VEX/pub \
-#	-I$(top_builddir)/VEX/pub \
-#	-DVGA_=1 \
-#	-DVGO_linux=1 \
-#	-DVGP__linux=1 \
-#	-DVGPV__linux_vanilla=1
+AM_CPPFLAGS_X86_LINUX = \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/include \
+	-I$(top_srcdir)/VEX/pub \
+	-I$(top_builddir)/VEX/pub \
+	-DVGA_x86=1 \
+	-DVGO_linux=1 \
+	-DVGP_x86_linux=1 \
+	-DVGPV_x86_linux_vanilla=1
 
 AM_FLAG_M3264_X86_LINUX = -m32
 AM_CFLAGS_X86_LINUX = -m32 -mpreferred-stack-boundary=2 \
@@ -566,8 +566,8 @@ AM_FLAG_M3264_PRI = $(AM_FLAG_M3264_AMD64_LINUX)
 AM_CPPFLAGS_PRI = $(AM_CPPFLAGS_AMD64_LINUX)
 AM_CFLAGS_PRI = $(AM_CFLAGS_AMD64_LINUX)
 AM_CCASFLAGS_PRI = $(AM_CCASFLAGS_AMD64_LINUX)
-AM_FLAG_M3264_SEC = 
-#AM_FLAG_M3264_SEC = $(AM_FLAG_M3264_)
+#AM_FLAG_M3264_SEC = 
+AM_FLAG_M3264_SEC = $(AM_FLAG_M3264_X86_LINUX)
 
 # Baseline link flags for making vgpreload shared objects.
 #
@@ -599,16 +599,16 @@ TOOL_DEPENDENCIES_AMD64_LINUX = \
 	$(top_builddir)/coregrind/libcoregrind-amd64-linux.a \
 	$(top_builddir)/VEX/libvex-amd64-linux.a
 
-#TOOL_DEPENDENCIES_ = \
-#	$(top_builddir)/coregrind/libcoregrind--linux.a \
-#	$(top_builddir)/VEX/libvex--linux.a
+TOOL_DEPENDENCIES_X86_LINUX = \
+	$(top_builddir)/coregrind/libcoregrind-x86-linux.a \
+	$(top_builddir)/VEX/libvex-x86-linux.a
 
 TOOL_LDADD_COMMON = -lgcc
 TOOL_LDADD_AMD64_LINUX = \
 	$(TOOL_DEPENDENCIES_AMD64_LINUX) $(TOOL_LDADD_COMMON)
 
-#TOOL_LDADD_ = \
-#	$(TOOL_DEPENDENCIES_) $(TOOL_LDADD_COMMON)
+TOOL_LDADD_X86_LINUX = \
+	$(TOOL_DEPENDENCIES_X86_LINUX) $(TOOL_LDADD_COMMON)
 
 
 # -Wl,--build-id=none is needed when linking tools with a linker that only
@@ -808,7 +808,7 @@ EXTRA_DIST = docs/ct-manual.xml
 # Headers, etc
 #----------------------------------------------------------------------------
 noinst_HEADERS = \
-		 head.h
+		 regs.h
 
 CSTRACER_SOURCES_COMMON = \
 	ct_main.c 
@@ -838,30 +838,30 @@ cstracer_amd64_linux_LINK = \
 	$(cstracer_amd64_linux_CFLAGS) \
 	$(cstracer_amd64_linux_LDFLAGS)
 
-#cstracer__linux_SOURCES = \
-#	$(CSTRACER_SOURCES_COMMON)
+cstracer_x86_linux_SOURCES = \
+	$(CSTRACER_SOURCES_COMMON)
 
-#cstracer__linux_CPPFLAGS = \
-#	$(AM_CPPFLAGS_)
+cstracer_x86_linux_CPPFLAGS = \
+	$(AM_CPPFLAGS_X86_LINUX)
 
-#cstracer__linux_CFLAGS = \
-#	$(AM_CFLAGS_)
+cstracer_x86_linux_CFLAGS = \
+	$(AM_CFLAGS_X86_LINUX)
 
-#cstracer__linux_DEPENDENCIES = \
-#	$(TOOL_DEPENDENCIES_)
+cstracer_x86_linux_DEPENDENCIES = \
+	$(TOOL_DEPENDENCIES_X86_LINUX)
 
-#cstracer__linux_LDADD = \
-#	$(TOOL_LDADD_)
+cstracer_x86_linux_LDADD = \
+	$(TOOL_LDADD_X86_LINUX)
 
-#cstracer__linux_LDFLAGS = \
-#	$(TOOL_LDFLAGS_)
+cstracer_x86_linux_LDFLAGS = \
+	$(TOOL_LDFLAGS_X86_LINUX)
 
-#cstracer__linux_LINK = \
-#	$(top_builddir)/coregrind/link_tool_exe_linux \
-#	0xUNSET \
-#	$(LINK) \
-#	$(cstracer__linux_CFLAGS) \
-#	$(cstracer__linux_LDFLAGS)
+cstracer_x86_linux_LINK = \
+	$(top_builddir)/coregrind/link_tool_exe_linux \
+	0x38000000 \
+	$(LINK) \
+	$(cstracer_x86_linux_CFLAGS) \
+	$(cstracer_x86_linux_LDFLAGS)
 
 all: all-recursive
 
@@ -905,9 +905,9 @@ cstracer-amd64-linux$(EXEEXT): $(cstracer_amd64_linux_OBJECTS) $(cstracer_amd64_
 	@rm -f cstracer-amd64-linux$(EXEEXT)
 	$(AM_V_GEN)$(cstracer_amd64_linux_LINK) $(cstracer_amd64_linux_OBJECTS) $(cstracer_amd64_linux_LDADD) $(LIBS)
 
-cstracer--linux$(EXEEXT): $(cstracer__linux_OBJECTS) $(cstracer__linux_DEPENDENCIES) $(EXTRA_cstracer__linux_DEPENDENCIES) 
-	@rm -f cstracer--linux$(EXEEXT)
-	$(AM_V_GEN)$(cstracer__linux_LINK) $(cstracer__linux_OBJECTS) $(cstracer__linux_LDADD) $(LIBS)
+cstracer-x86-linux$(EXEEXT): $(cstracer_x86_linux_OBJECTS) $(cstracer_x86_linux_DEPENDENCIES) $(EXTRA_cstracer_x86_linux_DEPENDENCIES) 
+	@rm -f cstracer-x86-linux$(EXEEXT)
+	$(AM_V_GEN)$(cstracer_x86_linux_LINK) $(cstracer_x86_linux_OBJECTS) $(cstracer_x86_linux_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -916,7 +916,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/cstracer_amd64_linux-ct_main.Po
-include ./$(DEPDIR)/cstracer__linux-ct_main.Po
+include ./$(DEPDIR)/cstracer_x86_linux-ct_main.Po
 
 .c.o:
 	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -948,19 +948,19 @@ cstracer_amd64_linux-ct_main.obj: ct_main.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cstracer_amd64_linux_CPPFLAGS) $(CPPFLAGS) $(cstracer_amd64_linux_CFLAGS) $(CFLAGS) -c -o cstracer_amd64_linux-ct_main.obj `if test -f 'ct_main.c'; then $(CYGPATH_W) 'ct_main.c'; else $(CYGPATH_W) '$(srcdir)/ct_main.c'; fi`
 
-cstracer__linux-ct_main.o: ct_main.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cstracer__linux_CPPFLAGS) $(CPPFLAGS) $(cstracer__linux_CFLAGS) $(CFLAGS) -MT cstracer__linux-ct_main.o -MD -MP -MF $(DEPDIR)/cstracer__linux-ct_main.Tpo -c -o cstracer__linux-ct_main.o `test -f 'ct_main.c' || echo '$(srcdir)/'`ct_main.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/cstracer__linux-ct_main.Tpo $(DEPDIR)/cstracer__linux-ct_main.Po
-#	$(AM_V_CC)source='ct_main.c' object='cstracer__linux-ct_main.o' libtool=no \
+cstracer_x86_linux-ct_main.o: ct_main.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cstracer_x86_linux_CPPFLAGS) $(CPPFLAGS) $(cstracer_x86_linux_CFLAGS) $(CFLAGS) -MT cstracer_x86_linux-ct_main.o -MD -MP -MF $(DEPDIR)/cstracer_x86_linux-ct_main.Tpo -c -o cstracer_x86_linux-ct_main.o `test -f 'ct_main.c' || echo '$(srcdir)/'`ct_main.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cstracer_x86_linux-ct_main.Tpo $(DEPDIR)/cstracer_x86_linux-ct_main.Po
+#	$(AM_V_CC)source='ct_main.c' object='cstracer_x86_linux-ct_main.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cstracer__linux_CPPFLAGS) $(CPPFLAGS) $(cstracer__linux_CFLAGS) $(CFLAGS) -c -o cstracer__linux-ct_main.o `test -f 'ct_main.c' || echo '$(srcdir)/'`ct_main.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cstracer_x86_linux_CPPFLAGS) $(CPPFLAGS) $(cstracer_x86_linux_CFLAGS) $(CFLAGS) -c -o cstracer_x86_linux-ct_main.o `test -f 'ct_main.c' || echo '$(srcdir)/'`ct_main.c
 
-cstracer__linux-ct_main.obj: ct_main.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cstracer__linux_CPPFLAGS) $(CPPFLAGS) $(cstracer__linux_CFLAGS) $(CFLAGS) -MT cstracer__linux-ct_main.obj -MD -MP -MF $(DEPDIR)/cstracer__linux-ct_main.Tpo -c -o cstracer__linux-ct_main.obj `if test -f 'ct_main.c'; then $(CYGPATH_W) 'ct_main.c'; else $(CYGPATH_W) '$(srcdir)/ct_main.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/cstracer__linux-ct_main.Tpo $(DEPDIR)/cstracer__linux-ct_main.Po
-#	$(AM_V_CC)source='ct_main.c' object='cstracer__linux-ct_main.obj' libtool=no \
+cstracer_x86_linux-ct_main.obj: ct_main.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cstracer_x86_linux_CPPFLAGS) $(CPPFLAGS) $(cstracer_x86_linux_CFLAGS) $(CFLAGS) -MT cstracer_x86_linux-ct_main.obj -MD -MP -MF $(DEPDIR)/cstracer_x86_linux-ct_main.Tpo -c -o cstracer_x86_linux-ct_main.obj `if test -f 'ct_main.c'; then $(CYGPATH_W) 'ct_main.c'; else $(CYGPATH_W) '$(srcdir)/ct_main.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cstracer_x86_linux-ct_main.Tpo $(DEPDIR)/cstracer_x86_linux-ct_main.Po
+#	$(AM_V_CC)source='ct_main.c' object='cstracer_x86_linux-ct_main.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cstracer__linux_CPPFLAGS) $(CPPFLAGS) $(cstracer__linux_CFLAGS) $(CFLAGS) -c -o cstracer__linux-ct_main.obj `if test -f 'ct_main.c'; then $(CYGPATH_W) 'ct_main.c'; else $(CYGPATH_W) '$(srcdir)/ct_main.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cstracer_x86_linux_CPPFLAGS) $(CPPFLAGS) $(cstracer_x86_linux_CFLAGS) $(CFLAGS) -c -o cstracer_x86_linux-ct_main.obj `if test -f 'ct_main.c'; then $(CYGPATH_W) 'ct_main.c'; else $(CYGPATH_W) '$(srcdir)/ct_main.c'; fi`
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.

@@ -185,6 +185,7 @@ typedef
 
 typedef 
   	struct {
+		 uint64_t encode_key;
 		 uint64_t ip;  // instruction pointer (program counter) value
 
 	#ifdef TRACE_MEM_VALUES
@@ -204,10 +205,10 @@ typedef
 		 uint64_t source_memory[NUM_INSTR_SOURCES];            // input memory
 
 	#ifdef TRACE_MEM_VALUES
-		 uint8_t d_valid[NUM_INSTR_DESTINATIONS][CACHE_LINE_SIZE];		
+		 uint8_t d_valid[NUM_INSTR_DESTINATIONS];		
 		 uint8_t d_value[NUM_INSTR_DESTINATIONS][CACHE_LINE_SIZE];	       // data in cache block 
 		 										       										 // to which store took place
-		 uint8_t s_valid[NUM_INSTR_SOURCES][CACHE_LINE_SIZE];
+		 uint8_t s_valid[NUM_INSTR_SOURCES];
 		 uint8_t s_value[NUM_INSTR_SOURCES][CACHE_LINE_SIZE];	       // data in cache block
 	#endif
 	} 
@@ -246,9 +247,10 @@ static VG_REGPARM(2) void trace_load(Addr addr, SizeT size )
 
 		#ifdef TRACE_MEM_VALUES
 					char * a = (char *)((addr >> CACHE_POW) << CACHE_POW);
+					inst.s_valid[i] = 1;
 					for(Int j = 0; j < CACHE_LINE_SIZE; j++) {
 						inst.s_value[i][j] = (uint8_t) a[j];
-						inst.s_valid[i][j] = 1;
+
 					}
 		#endif
 					if( DEBUG_CT ) {
@@ -291,9 +293,10 @@ static VG_REGPARM(2) void trace_store(Addr addr, SizeT size )
 
 			#ifdef TRACE_MEM_VALUES
 					 char * a = (char *)((addr >> CACHE_POW) << CACHE_POW);
+					 inst.d_valid[i] = 1;
 					 for(Int j = 0; j < CACHE_LINE_SIZE; j++) {
 						inst.d_value[i][j] = (uint8_t) a[j];
-						inst.d_valid[i][j] = 1;
+
 					 }
 			#endif
                 break;
@@ -434,8 +437,9 @@ static VG_REGPARM(0) void zero_inst ( void )
 		inst.destination_registers[i] = 0;
 		inst.destination_memory[i]  = 0;
 	#ifdef TRACE_MEM_VALUES
+		inst.d_valid[i] = 0;
 		for(Int j = 0; j < CACHE_LINE_SIZE; j++) {
-			inst.d_valid[i][j] = 0;
+
 			inst.d_value[i][j] = 0;
 		}	
 	#endif
@@ -447,8 +451,8 @@ static VG_REGPARM(0) void zero_inst ( void )
 		inst.source_memory[i]  = 0;
 
 	#ifdef TRACE_MEM_VALUES
+		inst.s_valid[i] = 0;
 		for(Int j = 0; j < CACHE_LINE_SIZE; j++) {
-			inst.s_valid[i][j] = 0;
 			inst.s_value[i][j] = 0;
 		}	
 	#endif
@@ -460,7 +464,32 @@ static VG_REGPARM(0) void write_inst_to_file ( void )
 	if ( !tracing ) return;
 	/* Don't Print Empty Instruction*/
 	if( inst.ip == 0 ) return;
-	VG_(write)( fd, &inst, sizeof( inst ) );
+	uint8_t buffer[1152];
+	uint32_t index = 0;
+	inst.encode_key = 0;
+	VG_(memcpy)(buffer+index, &inst, 32);
+	index += 32;
+	for (int i = 0; i < 4; i++){
+	    if (inst.d_valid[i]){
+		VG_(memcpy)(buffer+index, &inst.destination_memory[i], 8);
+		index += 8;
+		VG_(memcpy)(buffer+index, &inst.d_value[i], 64);
+		index += 64;
+		inst.encode_key += ((0xfULL) << (32 + 4*i));
+	    }
+	}
+	for (int i = 0; i < 4; i++){
+	    if (inst.s_valid[i]){
+		VG_(memcpy)(buffer+index, &inst.source_memory[i], 8);
+		index += 8;
+		VG_(memcpy)(buffer+index, &inst.s_value[i], 64);
+		index += 64;
+		inst.encode_key += ((0xfULL) << (48 + 4*i));
+	    }
+	}
+	inst.encode_key = (((index - 8) & 0xffffffffULL) | inst.encode_key);
+	VG_(memcpy)(buffer, &inst.encode_key, 8);
+	VG_(write)( fd, buffer, index );
 }
 
 static VG_REGPARM(0) void print_inst ( void )
