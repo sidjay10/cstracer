@@ -113,11 +113,20 @@ static unsigned long long int skip = 0;
 // Num of Instructions to trace --trace=
 static unsigned long long int trace_instrs = 1000;
 
+// Print superblock Info
+static Bool trace_superblocks = False;
+
+
+// Print superblock Info
+static Bool exit_after_tracing = True;
+
 static Bool ct_process_cmd_line_option(const HChar* arg)
 {
    if VG_STR_CLO(arg, "--trace-file", t_fname) {}
    else if VG_INT_CLO(arg, "--skip", skip) {}
    else if VG_INT_CLO(arg, "--trace", trace_instrs) {}
+   else if VG_BOOL_CLO(arg, "--superblocks", trace_superblocks) {}
+   else if VG_BOOL_CLO(arg, "--exit-after", exit_after_tracing) {}
    else
       return False;
 
@@ -132,6 +141,8 @@ static void ct_print_usage(void)
 "    --trace-file=<file>        Trace File Name\n"
 "    --trace=<num>        	Number of Instructions to Trace\n"
 "    --skip=<num>        	Number of Instructions to Skip\n"
+"    --superblocks=<yes|no> Print Superblock Information\n"
+"    --exit-after=<yes|no> Exit after tracing completes\n"
    );
 }
 
@@ -148,6 +159,7 @@ static void ct_print_debug_usage(void)
 
 static Bool tracing   = False;
 static Bool tracing_done   = False;
+static unsigned long long int  superblocks = 0;
 static unsigned long long int  instructions = 0;
 static int fd; 
 typedef
@@ -194,6 +206,14 @@ typedef
 	trace_instr_format_t;
 
 static trace_instr_format_t inst;
+
+
+static VG_REGPARM(1) void trace_superblock( Addr addr )
+
+   	//VG_(printf)("cstracer: SB %llu : Addr %08lx | Ins : %llu\n", superblocks, addr, instructions);
+   	VG_(printf)("cstracer: Addr %08lx | Ins : %llu\n", addr, instructions);
+		superblocks++;
+}
 
 static VG_REGPARM(2) void trace_instr(Addr iaddr, SizeT size)
 {
@@ -400,7 +420,7 @@ static VG_REGPARM(1) void trace_branch_direct( IRJumpKind jk )
 	} 
 	else if ( jk == Ijk_Ret ) {
 #if defined(VGP_arm64_linux)
-		VG_(printf)(" We shouldn't be here - Direct Ijk_Ret\n");
+		//VG_(printf)(" We shouldn't be here - Direct Ijk_Ret\n");
 		inst.destination_registers[0] = REG_PC;
 		inst.destination_registers[1] = REG_XSP;
 		inst.source_registers[0] = REG_X30;
@@ -599,22 +619,47 @@ static VG_REGPARM(0) void print_inst ( void )
 
 static VG_REGPARM(0) void inc_inst ( void )
 {
-	if ( tracing_done ) return; 
+	//if ( tracing_done ) return; 
 	instructions++;
-	if ( instructions > skip )
+	if ( instructions == skip ) {
 		tracing = True;
-	if( instructions > ( skip + trace_instrs + 1)) {
+		VG_(printf)("cstracer: Skipped %llu instructions\n",instructions);
+		VG_(printf)("cstracer: Starting Tracing\n");
+	}
+	if( instructions == ( skip + trace_instrs + 1 )) {
 	 	tracing = False;
 		if(!tracing_done) { 
 			/* end tracing */
-			VG_(printf)("cstracer: Tracing Done\ncstracer: Bye!\n"); 
-			VG_(close)(fd);
 			tracing_done = True;
+			VG_(printf)("cstracer: Tracing Completed\n"); 
+			VG_(printf)( "cstracer: Instructions = %llu\n",instructions - 1 );
+			
+			VG_(close)(fd);
+			
 			/* Valgrind is slow at executing the program, 	*
 			 * so we don't run the program to completion		*
 			 * and exit once tracing is done to save time.	*/
-			VG_(exit)(0);
+			if( exit_after_tracing ) {
+				VG_(printf)( "cstracer: Halting Execution\n" );
+				VG_(printf)( "cstracer: Bye!\n" ); 
+				VG_(exit)(0);	
+			}
 		}	
+	}
+}
+
+
+static void instrument_superblock( IRSB* sb, IRAtom* addr ) {
+
+	if ( trace_superblocks ) {
+		
+		IRDirty*   di;
+		di = unsafeIRDirty_0_N(
+		0, "trace_superblock",
+		VG_(fnptr_to_fnentry)( &trace_superblock ),
+		mkIRExprVec_1( mkIRExpr_HWord( (HWord) addr ) )
+      		);
+		addStmtToIRSB( sb, IRStmt_Dirty(di) );
 	}
 }
 
@@ -930,7 +975,7 @@ void instrument_reg_read( IRSB * sb, Int offset, Int sz )
 	int p;
 #if defined(VGP_arm64_linux)
 	p = offset_to_arm64_register( offset );
-	if ( p == 0 ) return;
+	if ( p == 0 || p == REG_PC ) return;
 #else
 	p = offset_to_x86_64_register( offset , sz );
 #endif
@@ -949,7 +994,7 @@ void instrument_reg_write( IRSB * sb, Int offset , Int sz )
 	int p;
 #if defined(VGP_arm64_linux)
 	p = offset_to_arm64_register( offset );
-	if ( p == 0 ) return;
+	if ( p == 0 || p == REG_PC ) return;
 #else
 	p = offset_to_x86_64_register( offset , sz );
 #endif
@@ -1055,6 +1100,8 @@ IRSB* ct_instrument ( VgCallbackClosure* closure,
       addStmtToIRSB( sbOut, sbIn->stmts[i] );
       i++;
    }
+   
+   instrument_superblock(sbOut, mkIRExpr_HWord( (HWord) vge->base[0]) );
 
    for (/*use current i*/; i < sbIn->stmts_used; i++) {
 
@@ -1073,9 +1120,9 @@ IRSB* ct_instrument ( VgCallbackClosure* closure,
 			case Ist_NoOp: 
 			case Ist_AbiHint:
 			case Ist_PutI: //TODO: Add support
-				if ( PRINT_ERROR ) {
+				/*if ( PRINT_ERROR ) {
 					VG_(printf)("ERROR: PutI Not Yet Supported\n");
-				}
+				}*/
 			case Ist_MBE:
 				addStmtToIRSB( sbOut, st );
 			break;
@@ -1266,6 +1313,9 @@ IRSB* ct_instrument ( VgCallbackClosure* closure,
 
 static void ct_fini(Int exitcode)
 {
+	VG_(printf)("cstracer: Program Completed\n");
+	VG_(printf)("cstracer: Instructions = %llu\n", instructions);
+
 	if( !tracing_done ) {
 		VG_(close)(fd);
 	}
