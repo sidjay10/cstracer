@@ -75,7 +75,7 @@
 //Set to 1 to for for debugging
 #define DEBUG_CT 0
 #define PRINT_INST 0
-#define PRINT_ERROR 0
+#define PRINT_ERROR 1
 
 
 #include "pub_tool_basics.h"
@@ -197,62 +197,57 @@ static trace_instr_format_t inst;
 
 static VG_REGPARM(2) void trace_instr(Addr iaddr, SizeT size)
 {
-//	if ( !tracing ) return;
+	if ( !tracing ) return;
 	inst.ip = iaddr;
 	if( DEBUG_CT ) {
    	VG_(printf)("I  %08lx,%lu\n", iaddr, size);
 	}	
 }
 
-static VG_REGPARM(2) void trace_load(Addr addr, SizeT size )
-{
-//	if ( !tracing ) return;
-    Int already_found = 0;
-    for(Int i=0; i<NUM_INSTR_SOURCES; i++)
-    {
-        if(inst.source_memory[i] == ((uint64_t) addr ))
-        {
-            already_found = 1;
-            break;
-        }
-    }
-    if(already_found == 0)
-    {
-        for(int i=0; i<NUM_INSTR_SOURCES; i++)
-        {
-			   if(inst.source_memory[i] == 0 )
-            {
-					 inst.source_memory[i] = (uint64_t) addr;
-
-		#ifdef TRACE_MEM_VALUES
-					char * a = (char *)((addr >> CACHE_POW) << CACHE_POW);
-					inst.s_valid[i] = 1;
-					for(Int j = 0; j < CACHE_LINE_SIZE; j++) {
-						inst.s_value[i][j] = (uint8_t) a[j];
-
-					}
-		#endif
-					if( DEBUG_CT ) {
-						VG_(printf)(" Load %08lx : ", addr);
-
-		#ifdef TRACE_MEM_VALUES
-						for(Int j = 0; j < CACHE_LINE_SIZE; j++) {
-							VG_(printf)("%d ",(uint8_t) a[j]);
-						}
-		#endif
-
-						VG_(printf)("\n");
-					}
-
-                break;
-            }
-        }
+static VG_REGPARM(2) void trace_load(Addr addr, SizeT size ) {
+	if ( !tracing ) return;
+   	Int already_found = 0;
+   	for(Int i=0; i<NUM_INSTR_SOURCES; i++) {
+	   if(inst.source_memory[i] == ((uint64_t) addr )) {
+           already_found = 1;
+           break;
+       }
    }
+   if(already_found == 0) {
+       for(int i=0; i<NUM_INSTR_SOURCES; i++) {
+		   if(inst.source_memory[i] == 0 )
+           {
+				 inst.source_memory[i] = (uint64_t) addr;
+
+	#ifdef TRACE_MEM_VALUES
+				char * a = (char *)((addr >> CACHE_POW) << CACHE_POW);
+				inst.s_valid[i] = 1;
+				for(Int j = 0; j < CACHE_LINE_SIZE; j++) {
+					inst.s_value[i][j] = (uint8_t) a[j];
+
+				}
+	#endif
+					if( DEBUG_CT ) {
+					VG_(printf)(" Load %08lx : ", addr);
+
+	#ifdef TRACE_MEM_VALUES
+					for(Int j = 0; j < CACHE_LINE_SIZE; j++) {
+						VG_(printf)("%d ",(uint8_t) a[j]);
+					}
+	#endif
+
+					VG_(printf)("\n");
+				}
+
+              break;
+           }
+       }
+  }
 }
 
 static VG_REGPARM(2) void trace_store(Addr addr, SizeT size )
 {
-//	if ( !tracing ) return;
+	if ( !tracing ) return;
     Int already_found = 0;
     for(Int i=0; i<NUM_INSTR_DESTINATIONS; i++)
     {
@@ -296,7 +291,7 @@ static VG_REGPARM(2) void trace_store(Addr addr, SizeT size )
 
 static VG_REGPARM(1) void trace_reg_read( Int r )
 {
-//	if ( !tracing ) return;
+	if ( !tracing ) return;
     Int already_found = 0;
     for(Int i=0; i<NUM_INSTR_SOURCES; i++)
     {
@@ -324,7 +319,7 @@ static VG_REGPARM(1) void trace_reg_read( Int r )
 
 static VG_REGPARM(1) void trace_reg_write( Int r )
 {
-//	if ( !tracing ) return;
+	if ( !tracing ) return;
     Int already_found = 0;
     for(Int i=0; i<NUM_INSTR_DESTINATIONS; i++)
     {
@@ -352,7 +347,7 @@ static VG_REGPARM(1) void trace_reg_write( Int r )
 
 static VG_REGPARM(1) void trace_branch_conditional( Bool ci , Bool guard )
 {
-//	if ( !tracing ) return;
+	if ( !tracing ) return;
 	inst.is_branch = 1;
 
 	/* Hack : Valgrind doesn't support implicit register reading, 		*
@@ -385,7 +380,7 @@ static VG_REGPARM(1) void trace_branch_conditional( Bool ci , Bool guard )
 
 static VG_REGPARM(1) void trace_branch_direct( IRJumpKind jk )
 {
-//	if ( !tracing ) return;
+	if ( !tracing ) return;
 	
 	if( DEBUG_CT ) {VG_(printf)(" Direct Branch\n"); }
 	inst.is_branch = 1;
@@ -431,7 +426,7 @@ static VG_REGPARM(1) void trace_branch_direct( IRJumpKind jk )
 
 static VG_REGPARM(1) void trace_branch_indirect( IRJumpKind jk )
 {
-//	if ( !tracing ) return;
+	if ( !tracing ) return;
 	
 	inst.is_branch = 1;
 	inst.branch_taken = 1;
@@ -483,7 +478,7 @@ static VG_REGPARM(1) void trace_branch_indirect( IRJumpKind jk )
 /* Set the inst structure to zero*/
 static VG_REGPARM(0) void zero_inst ( void )
 {
-//	if ( !tracing ) return;
+	if ( !tracing ) return;
 	inst.ip = 0;
 	inst.is_branch = 0;
 	inst.branch_taken = 0;
@@ -516,7 +511,7 @@ static VG_REGPARM(0) void zero_inst ( void )
 
 static VG_REGPARM(0) void write_inst_to_file ( void )
 {
-//	if ( !tracing ) return;
+	if ( !tracing ) return;
 	/* Don't Print Empty Instruction*/
 	if( inst.ip == 0 ) return;
 	uint8_t buffer[1152];
