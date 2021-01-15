@@ -137,8 +137,13 @@ static void fill_phdr(ESZ(Phdr) *phdr, const NSegment *seg, UInt off, Bool write
    phdr->p_align = VKI_PAGE_SIZE;
 }
 
+#if defined(VGC_android_clang)
+
+/* Clangs libc has a definition for this*/
+
+#else
 #if defined(VGPV_arm_linux_android) || defined(VGPV_x86_linux_android) \
-    || defined(VGPV_mips32_linux_android)
+    || defined(VGPV_mips32_linux_android )
 /* Android's libc doesn't provide a definition for this.  Hence: */
 typedef
    struct {
@@ -147,6 +152,8 @@ typedef
       Elf32_Word n_type;
    }
    Elf32_Nhdr;
+#endif
+
 #endif
 
 struct note {

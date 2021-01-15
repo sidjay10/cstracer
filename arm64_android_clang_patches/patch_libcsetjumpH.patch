@@ -1,0 +1,25 @@
+diff --git a/include/pub_tool_libcsetjmp.h b/include/pub_tool_libcsetjmp.h
+index 31d2b61d5..7c2909c40 100644
+--- a/include/pub_tool_libcsetjmp.h
++++ b/include/pub_tool_libcsetjmp.h
+@@ -120,6 +120,20 @@ UWord VG_MINIMAL_SETJMP(VG_MINIMAL_JMP_BUF(_env));
+ __attribute__((noreturn))
+ void  VG_MINIMAL_LONGJMP(VG_MINIMAL_JMP_BUF(_env));
+ 
++
++#elif defined(VGP_arm64_linux)
++
++/* Android clang/llvm has no __builtin_{setjmp,longjmp} for aarch64. */
++
++#define VG_MINIMAL_JMP_BUF(_name) jmp_buf _name
++__attribute__((returns_twice))
++UWord VG_MINIMAL_SETJMP(VG_MINIMAL_JMP_BUF(_env));
++__attribute__((noreturn))
++void  VG_MINIMAL_LONGJMP(VG_MINIMAL_JMP_BUF(_env));
++
++//#define VG_MINIMAL_SETJMP(_env)   ((UWord)(setjmp((_env))))
++//#define VG_MINIMAL_LONGJMP(_env)  longjmp((_env),1)
++
+ #else
+ 
+ /* The default implementation. */

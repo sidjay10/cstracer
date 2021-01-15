@@ -1,0 +1,39 @@
+=====================================================================
+			31st December 2020
+=====================================================================
+Android ndk21 uses the clang compiler. The original valgrind code was
+written for gcc. Due to this, patches are needed to compile valgrind
+for aarch64-android using the clang compiler.
+=====================================================================
+
+Bug1 : Compiler Error: __builtin_ setjmp and longjmp not found
+
+Fix  : Define the functions setjmp and longjmp for ARM64 in the file 
+       coregrind/m_libcsetjmp.c and include/pub_tool_libcsetjmp.h
+
+Patch: patch_libcsetjumpH.patch patch_libcsetjumpC.patch
+
+Urls : https://kde-bugs-dist.kde.narkive.com/RcgbC0xA
+
+=====================================================================
+
+Bug2 : Linker Error: Undefined reference to __aeabi_memcpy4 
+       __aeabi_memcpy8 __aeabi_memclr8
+
+Fix  : Add definitions for the following functions in the file
+       coregrind/m_main.c
+
+Patch: patch_aeabi.patch
+
+Urls : https://kde-bugs-dist.kde.narkive.com/KPgskUaa
+
+=====================================================================
+
+Bug3 : Redefinition of struct Elf32_Nhdr
+
+Fix  : As it is already defined in libc, comment out the definition
+       from coregrind/m_coredump/coredump-elf.c
+
+Patch: patch_elf.patch
+
+=====================================================================

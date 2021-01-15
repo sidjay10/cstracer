@@ -126,6 +126,16 @@ UWord VG_MINIMAL_SETJMP(VG_MINIMAL_JMP_BUF(_env));
 __attribute__((noreturn))
 void  VG_MINIMAL_LONGJMP(VG_MINIMAL_JMP_BUF(_env));
 
+#elif defined(VGP_arm64_linux) && defined(VGC_android_clang)
+
+/* Android clang/llvm has no __builtin_{setjmp,longjmp} for aarch64. */
+
+#define VG_MINIMAL_JMP_BUF(_name) jmp_buf _name
+__attribute__((returns_twice))
+UWord VG_MINIMAL_SETJMP(VG_MINIMAL_JMP_BUF(_env));
+__attribute__((noreturn))
+void  VG_MINIMAL_LONGJMP(VG_MINIMAL_JMP_BUF(_env));
+
 #else
 
 /* The default implementation. */

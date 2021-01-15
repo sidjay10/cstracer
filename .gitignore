@@ -1,5 +1,8 @@
 *.o
 
+# Installed
+Inst/
+
 # /
 /.in_place
 /.vs
@@ -45,6 +48,8 @@
 /auxprogs/getoff-x86-linux
 /auxprogs/getoff-s390x-linux
 /auxprogs/getoff-ppc32-linux
+/auxprogs/getoff-arm-linux
+/auxprogs/getoff-arm64-linux
 /auxprogs/getoff-ppc64be-linux
 /auxprogs/getoff-ppc64le-linux
 /auxprogs/getoff-mips32-linux
