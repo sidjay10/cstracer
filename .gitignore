@@ -693,6 +693,7 @@ inst/
 
 # /cstracer/
 /cstracer/*.so
+/cstracer/.clang-format
 /cstracer/.deps
 /cstracer/cstracer-*-darwin
 /cstracer/cstracer-*-linux
