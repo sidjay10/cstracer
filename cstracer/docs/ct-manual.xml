@@ -25,7 +25,7 @@ command line.</para>
 <para>Tracegen-specific command-line options are:</para>
 
 <!-- start of xi:include in the manpage -->
-<variablelist id="lk.opts.list">
+<variablelist id="ct.opts.list">
   <varlistentry id="opt.trace-mem" xreflabel="--trace-mem">
     <term>
       <option><![CDATA[--trace-mem=<no|yes> [default: no] ]]></option>
