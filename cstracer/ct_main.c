@@ -161,7 +161,8 @@ static Bool tracing   = False;
 static Bool tracing_done   = False;
 static unsigned long long int  superblocks = 0;
 static unsigned long long int  instructions = 0;
-static int fd; 
+static int fd;
+static UInt pid;
 typedef
    IRExpr
    IRAtom;
@@ -208,11 +209,11 @@ typedef
 static trace_instr_format_t inst;
 
 
-static VG_REGPARM(1) void trace_superblock( Addr addr )
+static VG_REGPARM(1) void trace_superblock( Addr addr ) {
 
    	//VG_(printf)("cstracer: SB %llu : Addr %08lx | Ins : %llu\n", superblocks, addr, instructions);
-   	VG_(printf)("cstracer: Addr %08lx | Ins : %llu\n", addr, instructions);
-		superblocks++;
+   	VG_(printf)("==%u== cstracer: Addr %08lx | Ins : %llu\n",pid, addr, instructions);
+	superblocks++;
 }
 
 static VG_REGPARM(2) void trace_instr(Addr iaddr, SizeT size)
@@ -623,16 +624,16 @@ static VG_REGPARM(0) void inc_inst ( void )
 	instructions++;
 	if ( instructions == skip ) {
 		tracing = True;
-		VG_(printf)("cstracer: Skipped %llu instructions\n",instructions);
-		VG_(printf)("cstracer: Starting Tracing\n");
+		VG_(printf)("==%u== cstracer: Skipped %llu instructions\n",pid, instructions);
+		VG_(printf)("==%u== cstracer: Starting Tracing\n",pid );
 	}
 	if( instructions == ( skip + trace_instrs + 1 )) {
 	 	tracing = False;
 		if(!tracing_done) { 
 			/* end tracing */
 			tracing_done = True;
-			VG_(printf)("cstracer: Tracing Completed\n"); 
-			VG_(printf)( "cstracer: Instructions = %llu\n",instructions - 1 );
+			VG_(printf)("==%u== cstracer: Tracing Completed\n",pid); 
+			VG_(printf)("==%u== cstracer: Instructions = %llu\n",pid, instructions - 1 );
 			
 			VG_(close)(fd);
 			
@@ -640,8 +641,8 @@ static VG_REGPARM(0) void inc_inst ( void )
 			 * so we don't run the program to completion		*
 			 * and exit once tracing is done to save time.	*/
 			if( exit_after_tracing ) {
-				VG_(printf)( "cstracer: Halting Execution\n" );
-				VG_(printf)( "cstracer: Bye!\n" ); 
+				VG_(printf)( "==%u== cstracer: Halting Execution\n",pid );
+				VG_(printf)( "==%u== cstracer: Bye!\n",pid ); 
 				VG_(exit)(0);	
 			}
 		}	
@@ -1060,11 +1061,16 @@ void instrument_branch_indirect( IRSB * sb, IRJumpKind jk  )
 static void ct_post_clo_init(void)
 {
 
-	VG_(printf)("inst struct size : %u\n",sizeof(inst));
-	VG_(printf)("Tracefile : %s\n",t_fname);
-	VG_(printf)("Skip : %llu\n",skip);
-	VG_(printf)("Trace : %llu\n",trace_instrs);
-	fd = VG_(fd_open)(t_fname,
+	pid = VG_(getpid)();
+
+	char str[128];
+	VG_(sprintf)(str, "%s_%u", t_fname,pid); 
+	VG_(printf)("==%u== cstracer: inst struct size : %u\n", pid, sizeof(inst));
+	VG_(printf)("==%u== cstracer: Tracefile : %s\n", pid, str);
+	VG_(printf)("==%u== cstracer: Skip : %llu\n", pid, skip);
+	VG_(printf)("==%u== cstracer: Trace : %llu\n", pid, trace_instrs);
+
+	fd = VG_(fd_open)(str,
 			VKI_O_WRONLY | VKI_O_TRUNC | VKI_O_CREAT,00644);
 	tl_assert(fd != -1);
 
@@ -1313,8 +1319,8 @@ IRSB* ct_instrument ( VgCallbackClosure* closure,
 
 static void ct_fini(Int exitcode)
 {
-	VG_(printf)("cstracer: Program Completed\n");
-	VG_(printf)("cstracer: Instructions = %llu\n", instructions);
+	VG_(printf)("==%u== cstracer: Program Completed\n",pid);
+	VG_(printf)("==%u== cstracer: Instructions = %llu\n",pid, instructions);
 
 	if( !tracing_done ) {
 		VG_(close)(fd);
@@ -1322,13 +1328,13 @@ static void ct_fini(Int exitcode)
    /* end tracing */
 }
 
-static void ct_pre_clo_init(void)
+static void ct_pre_clo_init( void )
 {
-   VG_(details_name)            ("ChampSimTracer");
+   VG_(details_name)            ( "ChampSimTracer" );
 #if defined(VGP_arm64_linux)
-   VG_(details_description)     ("generate Traces for Data ChampSim : arm64");
+   VG_(details_description)     ( "generate Traces for Data ChampSim : arm64" );
 #else
-   VG_(details_description)     ("generate Traces for Data ChampSim : x86-64");
+   VG_(details_description)     ( "generate Traces for Data ChampSim : x86-64" );
 #endif
    VG_(details_copyright_author)(
       "Copyright (C) 2020, and GNU GPL'd, by Siddharth Jayashankar.");

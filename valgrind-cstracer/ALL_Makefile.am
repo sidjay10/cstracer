@@ -4,8 +4,19 @@ AUTOMAKE_OPTIONS = 1.10
 include $(top_srcdir)/Makefile.all.am 
 
 TOOLS = \
-		cstracer 
+		memcheck \
+		cachegrind \
+		callgrind \
+		helgrind \
+		drd \
+		massif \
+		dhat \
+		lackey \
+		cstracer \
+		none
 
+EXP_TOOLS = \
+		exp-bbv
 
 # Put docs last because building the HTML is slow and we want to get
 # everything else working before we try it.
@@ -15,7 +26,13 @@ SUBDIRS = \
 	coregrind \
 	. \
 	$(TOOLS) \
+	$(EXP_TOOLS) \
 	shared \
+	tests \
+	perf \
+	gdbserver_tests \
+	memcheck/tests/vbit-test \
+	auxprogs \
 	mpi \
 	solaris \
 	docs

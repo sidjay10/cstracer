@@ -3,6 +3,7 @@
 # Installed
 Inst/
 inst_x86-64/
+inst/
 
 # /
 /.in_place
