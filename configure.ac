@@ -4890,6 +4890,28 @@ AC_CONFIG_FILES([
    coregrind/Makefile 
    cstracer/Makefile
    cstracer/tests/Makefile
+   none/Makefile
+   none/tests/Makefile
+   none/tests/scripts/Makefile
+   none/tests/amd64/Makefile
+   none/tests/ppc32/Makefile
+   none/tests/ppc64/Makefile
+   none/tests/x86/Makefile
+   none/tests/arm/Makefile
+   none/tests/arm64/Makefile
+   none/tests/s390x/Makefile
+   none/tests/mips32/Makefile
+   none/tests/mips64/Makefile
+   none/tests/nanomips/Makefile
+   none/tests/linux/Makefile
+   none/tests/darwin/Makefile
+   none/tests/solaris/Makefile
+   none/tests/amd64-linux/Makefile
+   none/tests/x86-linux/Makefile
+   none/tests/amd64-darwin/Makefile
+   none/tests/x86-darwin/Makefile
+   none/tests/amd64-solaris/Makefile
+   none/tests/x86-solaris/Makefile
    shared/Makefile
    solaris/Makefile
 ])

@@ -4,7 +4,8 @@ AUTOMAKE_OPTIONS = 1.10
 include $(top_srcdir)/Makefile.all.am 
 
 TOOLS = \
-		cstracer 
+		cstracer \
+		none
 
 
 # Put docs last because building the HTML is slow and we want to get

@@ -600,6 +600,7 @@ static VG_REGPARM(0) void print_inst(void) {
 
 static VG_REGPARM(0) void inc_inst(void) {
 	//if (!tracing) { return; }
+	instructions++;
 	if (instructions == skip) {
 		tracing = True;
 		VG_(printf)
@@ -795,6 +796,12 @@ static ARM64_REG offset_to_arm64_register(Int offset) {
 	return -1;
 }
 
+#elif defined(VGP_x86_linux) 
+
+static PIN_REG offset_to_x86_64_register(Int offset, Int sz) {
+	tl_assert(offset >= 0);
+	return 0;
+}
 
 #else
 
@@ -1059,7 +1066,7 @@ static IRSB *ct_instrument(VgCallbackClosure *closure, IRSB *sbIn,
 	for (/*use current i*/; i < sbIn->stmts_used; i++) {
 
 		IRStmt *st = sbIn->stmts[i];
-		if (!st)
+		if ( !st || st->tag == Ist_NoOp )
 			continue;
 		switch (st->tag) {
 
@@ -1110,7 +1117,7 @@ static IRSB *ct_instrument(VgCallbackClosure *closure, IRSB *sbIn,
 				}
 				/*Not supported as of now*/
 				ppIRStmt(st);
-				tl_assert(0);
+				//tl_assert(0);
 				break;
 			default:
 				break;
