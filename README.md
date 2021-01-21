@@ -7,7 +7,7 @@ Note: This tool is an EXPERIMENTAL PROTOTYPE used for research purposes.
 It's neither fast nor safe to use. You have been warned!
 
 ## Compiling
-See the original Valgrind [README.valgrind](README) for instructions on building valgrind.
+See the original Valgrind [README](README.valgrind) for instructions on building valgrind.
 
 ### andorid aarch64
 To build the cstracer tool for android aarch 64, 
