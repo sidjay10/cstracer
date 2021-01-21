@@ -2,8 +2,16 @@
 
 # Installed
 Inst/
+Inst_x86/
+Inst_x86_64/
 inst_x86-64/
 inst/
+
+# Extra
+extra/
+
+#tags
+tags
 
 # /
 /.in_place
