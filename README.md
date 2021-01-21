@@ -10,10 +10,15 @@ It's neither fast nor safe to use. You have been warned!
 See the original Valgrind [README](README) for instructions on building valgrind.
 
 ### andorid aarch64
-To build the cstracer tool for android aarch 64, point the NDK_HOME variable in the build_ndk10_gcc.sh to the android ndk on your system and then run the script.
+To build the cstracer tool for android aarch 64, 
+
+1. Install android ndk-10rc if not already done.
+
+2. Point the NDK_HOME variable in the build_ndk10_gcc.sh to the android ndk on your system.
 
 Then 
 ~~~
+bash build_ndk10_gcc.sh
 cd Inst/data/local/tmp
 adb push Inst/ /data/local/tmp/
 adb shell export VALGRIND_LIB=/data/local/tmp/lib/valgrind/
