@@ -3025,6 +3025,23 @@ static HReg iselFltExpr_wrk ( ISelEnv* env, const IRExpr* e )
       return dst;
    }
 
+
+// Added by SidJay
+
+
+   if (e->tag == Iex_ITE) { // VFD
+      HReg r1, r0, dst;
+      vassert(ty == Ity_F32);
+      vassert(typeOfIRExpr(env->type_env,e->Iex.ITE.cond) == Ity_I1);
+      r1  = iselFltExpr(env, e->Iex.ITE.iftrue);
+      r0  = iselFltExpr(env, e->Iex.ITE.iffalse);
+      dst = newVRegF(env);
+      addInstr(env, X86Instr_FpUnary(Xfp_MOV,r1,dst));
+      X86CondCode cc = iselCondCode(env, e->Iex.ITE.cond);
+      addInstr(env, X86Instr_FpCMov(cc ^ 1, r0, dst));
+      return dst;
+   }
+
    ppIRExpr(e);
    vpanic("iselFltExpr_wrk");
 }

@@ -12560,7 +12560,14 @@ Long dis_ESC_0F__SSE2 ( Bool* decode_OK,
       if (haveF3no66noF2(pfx) && sz == 4) {
          modrm = getUChar(delta);
          if (epartIsReg(modrm)) {
-            /* fall through, we don't yet have a test case */
+            // Added by SidJay, This instruction was encountered while running 
+            // on Android x86-64.
+
+            putXMMRegLane32( eregOfRexRM(pfx,modrm), 0,
+                             getXMMRegLane32( gregOfRexRM(pfx,modrm), 0 ));
+            DIP("movsd %s,%s\n", nameXMMReg(gregOfRexRM(pfx,modrm)),
+                                 nameXMMReg(eregOfRexRM(pfx,modrm)));
+            delta += 1;
          } else {
             addr = disAMode ( &alen, vbi, pfx, delta, dis_buf, 0 );
             storeLE( mkexpr(addr),
@@ -12568,8 +12575,8 @@ Long dis_ESC_0F__SSE2 ( Bool* decode_OK,
             DIP("movss %s,%s\n", nameXMMReg(gregOfRexRM(pfx,modrm)),
                                  dis_buf);
             delta += alen;
-            goto decode_success;
          }
+         goto decode_success;
       }
       /* 66 0F 11 = MOVUPD -- move from G (xmm) to E (mem or xmm). */
       if (have66noF2noF3(pfx)

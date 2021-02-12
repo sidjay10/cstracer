@@ -9369,7 +9369,13 @@ DisResult disInstr_X86_WRK (
       vassert(sz == 4);
       modrm = getIByte(delta+3);
       if (epartIsReg(modrm)) {
-         /* fall through, we don't yet have a test case */
+        // Added by SidJay, This instruction was encountered while running 
+        // on Android x86.
+         putXMMRegLane32( eregOfRM(modrm), 0,
+                          getXMMRegLane32( gregOfRM(modrm), 0 ));
+         DIP("movss %s,%s\n", nameXMMReg(gregOfRM(modrm)),
+                              nameXMMReg(eregOfRM(modrm)));
+         delta += 3+1;
       } else {
          addr = disAMode ( &alen, sorb, delta+3, dis_buf );
          storeLE( mkexpr(addr),
@@ -9377,8 +9383,8 @@ DisResult disInstr_X86_WRK (
          DIP("movss %s,%s\n", nameXMMReg(gregOfRM(modrm)),
                               dis_buf);
          delta += 3+alen;
-         goto decode_success;
       }
+	 goto decode_success;
    }
 
    /* 0F 59 = MULPS -- mul 32Fx4 from R/M to R */
