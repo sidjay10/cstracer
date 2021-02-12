@@ -5,6 +5,7 @@ include $(top_srcdir)/Makefile.all.am
 
 TOOLS = \
 		cstracer \
+		ctlite \
 		none
 
 

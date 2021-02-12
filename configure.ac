@@ -4890,6 +4890,8 @@ AC_CONFIG_FILES([
    coregrind/Makefile 
    cstracer/Makefile
    cstracer/tests/Makefile
+   ctlite/Makefile
+   ctlite/tests/Makefile
    none/Makefile
    none/tests/Makefile
    none/tests/scripts/Makefile
