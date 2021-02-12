@@ -1,0 +1,36 @@
+diff --git a/runtime/runtime.cc b/runtime/runtime.cc
+index 7696729cdd..05c4dbd338 100644
+--- a/runtime/runtime.cc
++++ b/runtime/runtime.cc
+@@ -1370,7 +1370,9 @@ bool Runtime::Init(RuntimeArgumentMap&& runtime_options_in) {
+     case InstructionSet::kMips64:
+       implicit_null_checks_ = true;
+       // Installing stack protection does not play well with valgrind.
+-      implicit_so_checks_ = !(RUNNING_ON_MEMORY_TOOL && kMemoryToolIsValgrind);
++      // Changed by Sidjay
++      // implicit_so_checks_ = !(RUNNING_ON_MEMORY_TOOL && kMemoryToolIsValgrind);
++      implicit_so_checks_ = false;
+       break;
+     default:
+       // Keep the defaults.
+diff --git a/runtime/thread.cc b/runtime/thread.cc
+index ea6c071fa7..e455514a6d 100644
+--- a/runtime/thread.cc
++++ b/runtime/thread.cc
+@@ -1118,10 +1118,12 @@ bool Thread::InitStackHwm() {
+   // Valgrind on arm doesn't give the right values here. Do not install the guard page, and
+   // effectively disable stack overflow checks (we'll get segfaults, potentially) by setting
+   // stack_begin to 0.
+-  const bool valgrind_on_arm =
+-      (kRuntimeISA == InstructionSet::kArm || kRuntimeISA == InstructionSet::kArm64) &&
+-      kMemoryToolIsValgrind &&
+-      RUNNING_ON_MEMORY_TOOL != 0;
++  //
++  // Changed By SidJay - to enable valgrind
++  const bool valgrind_on_arm = true;
++  //      (kRuntimeISA == InstructionSet::kArm || kRuntimeISA == InstructionSet::kArm64) &&
++  //      kMemoryToolIsValgrind &&
++  //      RUNNING_ON_MEMORY_TOOL != 0;
+   if (valgrind_on_arm) {
+     tlsPtr_.stack_begin = nullptr;
+   }

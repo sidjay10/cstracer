@@ -1,0 +1,14 @@
+diff --git a/runtime/mem_map.h b/runtime/mem_map.h
+index 0ecb414614..820004d408 100644
+--- a/runtime/mem_map.h
++++ b/runtime/mem_map.h
+@@ -28,7 +28,8 @@
+ 
+ namespace art {
+ 
+-#if defined(__LP64__) && (defined(__aarch64__) || defined(__mips__) || defined(__APPLE__))
++// Changed by SidJay to use the ART Allocator for x86_64
++#if defined(__LP64__) && (defined(__aarch64__) || defined(__mips__) || defined(__APPLE__) || defined(__x86_64__))
+ #define USE_ART_LOW_4G_ALLOCATOR 1
+ #else
+ #if defined(__LP64__) && !defined(__x86_64__)

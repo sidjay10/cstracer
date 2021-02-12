@@ -1,0 +1,15 @@
+diff --git a/runtime/gc/space/rosalloc_space.cc b/runtime/gc/space/rosalloc_space.cc
+index e7865363a1..70d5418589 100644
+--- a/runtime/gc/space/rosalloc_space.cc
++++ b/runtime/gc/space/rosalloc_space.cc
+@@ -382,7 +382,9 @@ size_t RosAllocSpace::AllocationSizeNonvirtual(mirror::Object* obj, size_t* usab
+   size_t size = obj->SizeOf<kVerifyNone>();
+   bool add_redzones = false;
+   if (kMaybeIsRunningOnMemoryTool) {
+-    add_redzones = RUNNING_ON_MEMORY_TOOL ? kMemoryToolAddsRedzones : 0;
++  // Changed by SidJay for Valgrind
++  // add_redzones = RUNNING_ON_MEMORY_TOOL ? kMemoryToolAddsRedzones : 0;
++  add_redzones = true;
+     if (add_redzones) {
+       size += 2 * kDefaultMemoryToolRedZoneBytes;
+     }

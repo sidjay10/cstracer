@@ -1,0 +1,30 @@
+diff --git a/services/core/java/com/android/server/am/ActiveServices.java b/services/core/java/com/android/server/am/ActiveServices.java
+index ca715b51a32..37fa0812f7f 100644
+--- a/services/core/java/com/android/server/am/ActiveServices.java
++++ b/services/core/java/com/android/server/am/ActiveServices.java
+@@ -112,7 +112,9 @@ public final class ActiveServices {
+     private static final boolean SHOW_DUNGEON_NOTIFICATION = false;
+ 
+     // How long we wait for a service to finish executing.
+-    static final int SERVICE_TIMEOUT = 20*1000;
++    // Changed by Sidjay for antutu - We increase service timeout to let the app run properly
++    // static final int SERVICE_TIMEOUT = 20*1000;
++    static final int SERVICE_TIMEOUT = 5*60*1000;
+ 
+     // How long we wait for a service to finish executing.
+     static final int SERVICE_BACKGROUND_TIMEOUT = SERVICE_TIMEOUT * 10;
+diff --git a/services/core/java/com/android/server/wm/WindowManagerService.java b/services/core/java/com/android/server/wm/WindowManagerService.java
+index 7a2c28bd5c8..f33987e8447 100644
+--- a/services/core/java/com/android/server/wm/WindowManagerService.java
++++ b/services/core/java/com/android/server/wm/WindowManagerService.java
+@@ -331,7 +331,9 @@ public class WindowManagerService extends IWindowManager.Stub
+     private static final int INPUT_DEVICES_READY_FOR_SAFE_MODE_DETECTION_TIMEOUT_MILLIS = 1000;
+ 
+     // Default input dispatching timeout in nanoseconds.
+-    static final long DEFAULT_INPUT_DISPATCHING_TIMEOUT_NANOS = 5000 * 1000000L;
++    // Changed by SidJay for Valgrind
++    //static final long DEFAULT_INPUT_DISPATCHING_TIMEOUT_NANOS = 5000 * 1000000L;
++    static final long DEFAULT_INPUT_DISPATCHING_TIMEOUT_NANOS = 50000 * 1000000L;
+ 
+     // Poll interval in milliseconds for watching boot animation finished.
+     private static final int BOOT_ANIMATION_POLL_INTERVAL = 200;
