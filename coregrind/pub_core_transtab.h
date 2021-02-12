@@ -160,6 +160,7 @@ extern void VG_(init_tt_tc)       ( void );
    (realistically, about 2/3 of that) for Memcheck. */
 #if defined(VGPV_arm_linux_android) \
     || defined(VGPV_x86_linux_android) \
+    || defined(VGPV_amd64_linux_android) \
     || defined(VGPV_mips32_linux_android) \
     || defined(VGPV_arm64_linux_android)
 # define N_SECTORS_DEFAULT 12

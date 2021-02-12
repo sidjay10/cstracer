@@ -8604,7 +8604,7 @@ PRE(sys_ioctl)
 
 #  if defined(VGPV_arm_linux_android) || defined(VGPV_x86_linux_android) \
       || defined(VGPV_mips32_linux_android) \
-      || defined(VGPV_arm64_linux_android)
+      || defined(VGPV_arm64_linux_android) || defined(VGPV_amd64_linux_android)
    /* ashmem */
    case VKI_ASHMEM_GET_SIZE:
    case VKI_ASHMEM_SET_SIZE:
@@ -11345,7 +11345,7 @@ POST(sys_ioctl)
 
 #  if defined(VGPV_arm_linux_android) || defined(VGPV_x86_linux_android) \
       || defined(VGPV_mips32_linux_android) \
-      || defined(VGPV_arm64_linux_android)
+      || defined(VGPV_arm64_linux_android) || defined(VGPV_amd64_linux_android)
    /* ashmem */
    case VKI_ASHMEM_GET_SIZE:
    case VKI_ASHMEM_SET_SIZE:

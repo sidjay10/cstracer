@@ -124,7 +124,7 @@ static inline void my_exit ( int x )
       || defined(VGPV_arm64_linux_android)
    __asm__ __volatile__(".word 0xFFFFFFFF");
    while (1) {}
-#  elif defined(VGPV_x86_linux_android)
+#  elif defined(VGPV_x86_linux_android) || defined(VGPV_amd64_linux_android)
    __asm__ __volatile__("ud2");
    while (1) {}
 #  else
@@ -138,6 +138,7 @@ static inline int my_getpagesize ( void )
 {
 #  if defined(VGPV_arm_linux_android) \
       || defined(VGPV_x86_linux_android) \
+      || defined(VGPV_amd64_linux_android) \
       || defined(VGPV_mips32_linux_android) \
       || defined(VGPV_arm64_linux_android)
    return 4096; /* kludge - link failure on Android, for some reason */
@@ -1106,7 +1107,7 @@ static void init(void);
  MALLOC_USABLE_SIZE(VG_Z_LIBC_SONAME, malloc_size);
  MALLOC_USABLE_SIZE(SO_SYN_MALLOC,    malloc_size);
 # if defined(VGPV_arm_linux_android) || defined(VGPV_x86_linux_android) \
-     || defined(VGPV_mips32_linux_android)
+     || defined(VGPV_mips32_linux_android) || defined(VGPV_amd64_linux_android)
   MALLOC_USABLE_SIZE(VG_Z_LIBC_SONAME, dlmalloc_usable_size);
   MALLOC_USABLE_SIZE(SO_SYN_MALLOC,    dlmalloc_usable_size);
 # endif

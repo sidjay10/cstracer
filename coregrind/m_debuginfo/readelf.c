@@ -284,6 +284,7 @@ Bool get_elf_symbol_info (
    PtrdiffT text_bias, data_bias, sdata_bias, rodata_bias, bss_bias, sbss_bias;
 #     if defined(VGPV_arm_linux_android) \
          || defined(VGPV_x86_linux_android) \
+         || defined(VGPV_amd64_linux_android) \
          || defined(VGPV_mips32_linux_android) \
          || defined(VGPV_arm64_linux_android)
    Addr available_size = 0;
@@ -477,6 +478,7 @@ Bool get_elf_symbol_info (
    if (*sym_size_out == 0) {
 #     if defined(VGPV_arm_linux_android) \
          || defined(VGPV_x86_linux_android) \
+         || defined(VGPV_amd64_linux_android) \
          || defined(VGPV_mips32_linux_android) \
          || defined(VGPV_arm64_linux_android)
       *sym_size_out = available_size ? available_size : 2048;

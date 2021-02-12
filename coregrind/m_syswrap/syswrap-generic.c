@@ -2395,6 +2395,21 @@ ML_(generic_PRE_sys_mmap) ( ThreadId tid,
          arg5, /* fd */
          arg6  /* offset */
       );
+
+
+// Loading Symbols causes crashes in cstracer on x86-android, so we
+// remove it
+#if defined(CST_NO_SYMBOLS)
+      /* Notify the tool. */
+      notify_tool_of_mmap(
+         (Addr)sr_Res(sres), /* addr kernel actually assigned */
+         arg2, /* length */
+         arg3, /* prot */
+         0 /* so the tool can refer to the read debuginfo later,
+                      if it wants. */
+      );
+
+#else
       /* Load symbols? */
       di_handle = VG_(di_notify_mmap)( (Addr)sr_Res(sres), 
                                        False/*allow_SkFileV*/, (Int)arg5 );
@@ -2406,6 +2421,8 @@ ML_(generic_PRE_sys_mmap) ( ThreadId tid,
          di_handle /* so the tool can refer to the read debuginfo later,
                       if it wants. */
       );
+#endif
+
    }
 
    /* Stay sane */

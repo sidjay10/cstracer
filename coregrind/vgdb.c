@@ -700,6 +700,7 @@ void received_signal(int signum)
       sigalrm++;
 #if defined(VGPV_arm_linux_android) \
     || defined(VGPV_x86_linux_android) \
+    || defined(VGPV_amd64_linux_android) \
     || defined(VGPV_mips32_linux_android) \
     || defined(VGPV_arm64_linux_android)
       /* Android has no pthread_cancel. As it also does not have

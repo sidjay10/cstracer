@@ -97,6 +97,7 @@ Bool   VG_(clo_show_error_list) = False;
 
 #if defined(VGPV_arm_linux_android) \
     || defined(VGPV_x86_linux_android) \
+    || defined(VGPV_amd64_linux_android) \
     || defined(VGPV_mips32_linux_android) \
     || defined(VGPV_arm64_linux_android) \
     || defined(VGP_nanomips_linux)
