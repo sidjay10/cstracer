@@ -69,13 +69,13 @@
 
 
 // undef this to generate traces for the normal form of ChampSim
-#define TRACE_MEM_VALUES
+#define TRACE_MEM_VALUES 1
 
 
 // Set to 1 to for for debugging
 #define DEBUG_CT 0
 #define PRINT_INST 0
-#define PRINT_ERROR 1
+#define PRINT_ERROR 0
 
 
 #include "pub_tool_basics.h"
@@ -113,12 +113,10 @@ static unsigned long long int skip = 0;
 // Num of Instructions to trace --trace=
 static unsigned long long int trace_instrs = 1000;
 
-// Print superblock Info
-static Bool trace_superblocks = False;
+// Print Heartbeat after --heartbeat= instructions
+static unsigned long long int heartbeat = 100000000;
 
-
-// Print superblock Info
-static Bool exit_after_tracing = True;
+static Bool exit_after_tracing = False;
 
 static Bool ct_process_cmd_line_option(const HChar *arg) {
 	if
@@ -128,7 +126,7 @@ static Bool ct_process_cmd_line_option(const HChar *arg) {
 	else if
 		VG_INT_CLO(arg, "--trace", trace_instrs) {}
 	else if
-		VG_BOOL_CLO(arg, "--superblocks", trace_superblocks) {}
+		VG_INT_CLO(arg, "--heartbeat", heartbeat) {}
 	else if
 		VG_BOOL_CLO(arg, "--exit-after", exit_after_tracing) {}
 	else
@@ -144,7 +142,6 @@ static void ct_print_usage(void) {
 	("    --trace-file=<file>        Trace File Name\n"
 	 "    --trace=<num>        	Number of Instructions to Trace\n"
 	 "    --skip=<num>        	Number of Instructions to Skip\n"
-	 "    --superblocks=<yes|no> Print Superblock Information\n"
 	 "    --exit-after=<yes|no> Exit after tracing completes\n");
 }
 
@@ -157,8 +154,8 @@ static void ct_print_debug_usage(void) { VG_(printf)(" (none)\n"); }
 static Bool tracing	= False;
 static Bool tracing_done = False;
 
-static unsigned long long int superblocks  = 0;
 static unsigned long long int instructions = 0;
+static unsigned long long int instructions_ = 0;
 
 static int fd;
 static UInt pid;
@@ -167,24 +164,24 @@ typedef IRExpr IRAtom;
 #define MAX_DSIZE 512
 
 /* For ChampSim Traces*/
-#define NUM_INSTR_DESTINATIONS 4
+#define NUM_INSTR_DESTINATIONS 2
 #define NUM_INSTR_SOURCES 4
 #define CACHE_POW 6
 #define CACHE_LINE_SIZE 64
 
+
+#define INST_IS_BRANCH_MASK 0x2000U
+#define INST_BRANCH_TAKEN_MASK 0x1000U
+#define DEST_REG_MASK 0x400U
+#define DEST_MEM_MASK 0x100U
+#define SOURCE_REG_MASK 0x10U
+#define SOURCE_MEM_MASK 0x1U
+
 typedef struct {
-	uint64_t encode_key;
 	uint64_t ip; // instruction pointer (program counter) value
 
-#ifdef TRACE_MEM_VALUES
-	uint32_t is_branch;	// is this branch
-	uint32_t branch_taken; // if so, is this taken
-#endif
-
-#ifndef TRACE_MEM_VALUES
-	uint32_t is_branch;	// is this branch
-	uint32_t branch_taken; // if so, is this taken
-#endif
+	uint8_t is_branch;	// is this branch
+	uint8_t branch_taken; // if so, is this taken
 
 	uint8_t destination_registers[NUM_INSTR_DESTINATIONS]; // output registers
 	uint8_t source_registers[NUM_INSTR_SOURCES];		   // input registers
@@ -203,16 +200,6 @@ typedef struct {
 } trace_instr_format_t;
 
 static trace_instr_format_t inst;
-
-
-static VG_REGPARM(1) void trace_superblock(Addr addr) {
-
-	// VG_(printf)("cstracer: SB %llu : Addr %08lx | Ins : %llu\n", superblocks,
-	// addr, instructions);
-	VG_(printf)
-	("==%u== cstracer: Addr %08lx | Ins : %llu\n", pid, addr, instructions);
-	superblocks++;
-}
 
 static VG_REGPARM(2) void trace_instr(Addr iaddr, SizeT size) {
 	if (!tracing)
@@ -241,9 +228,12 @@ static VG_REGPARM(2) void trace_load(Addr addr, SizeT size) {
 #ifdef TRACE_MEM_VALUES
 				char *a	= (char *)((addr >> CACHE_POW) << CACHE_POW);
 				inst.s_valid[i] = 1;
+				VG_(memcpy)((char *)&(inst.s_value[i][0]),(char *) a,CACHE_LINE_SIZE);
+#if 0
 				for (Int j = 0; j < CACHE_LINE_SIZE; j++) {
 					inst.s_value[i][j] = (uint8_t)a[j];
 				}
+#endif
 #endif
 				if (DEBUG_CT) {
 					VG_(printf)(" Load %08lx : ", addr);
@@ -278,9 +268,12 @@ static VG_REGPARM(2) void trace_store(Addr addr, SizeT size) {
 #ifdef TRACE_MEM_VALUES
 				char *a			= (char *)((addr >> CACHE_POW) << CACHE_POW);
 				inst.d_valid[i] = 1;
+				VG_(memcpy)((char *)&(inst.d_value[i][0]),(char *)a,CACHE_LINE_SIZE);
+#if 0
 				for (Int j = 0; j < CACHE_LINE_SIZE; j++) {
 					inst.d_value[i][j] = (uint8_t)a[j];
 				}
+#endif
 #endif
 				break;
 
@@ -362,10 +355,11 @@ static VG_REGPARM(1) void trace_branch_conditional(Bool ci, Bool guard) {
 	inst.source_registers[0]	  = REG_RIP;
 	inst.source_registers[1]	  = REG_RFLAGS;
 #endif
-	if (guard)
+	if (guard) {
 		inst.branch_taken = !ci;
-	else
+	} else {
 		inst.branch_taken = ci;
+	}
 	if (DEBUG_CT) {
 		if (guard)
 			VG_(printf)(" Branch Taken\n");
@@ -485,32 +479,7 @@ static VG_REGPARM(1) void trace_branch_indirect(IRJumpKind jk) {
 /* Set the inst structure to zero*/
 static VG_REGPARM(0) void zero_inst(void) {
 	if (!tracing) { return; }
-	inst.ip			  = 0;
-	inst.is_branch	= 0;
-	inst.branch_taken = 0;
-	for (Int i = 0; i < NUM_INSTR_DESTINATIONS; i++) {
-		inst.destination_registers[i] = 0;
-		inst.destination_memory[i]	= 0;
-#ifdef TRACE_MEM_VALUES
-		inst.d_valid[i] = 0;
-		for (Int j = 0; j < CACHE_LINE_SIZE; j++) {
-
-			inst.d_value[i][j] = 0;
-		}
-#endif
-	}
-
-	for (Int i = 0; i < NUM_INSTR_SOURCES; i++) {
-		inst.source_registers[i] = 0;
-		inst.source_memory[i]	= 0;
-
-#ifdef TRACE_MEM_VALUES
-		inst.s_valid[i] = 0;
-		for (Int j = 0; j < CACHE_LINE_SIZE; j++) {
-			inst.s_value[i][j] = 0;
-		}
-#endif
-	}
+	VG_(memset)( &inst, 0, sizeof(inst));
 }
 
 static VG_REGPARM(0) void write_inst_to_file(void) {
@@ -520,29 +489,64 @@ static VG_REGPARM(0) void write_inst_to_file(void) {
 		return;
 	uint8_t buffer[1152];
 	uint32_t index  = 0;
-	inst.encode_key = 0;
-	VG_(memcpy)(buffer + index, &inst, 32);
-	index += 32;
-	for (int i = 0; i < 4; i++) {
+	uint32_t encode_key = 0;
+	if(inst.is_branch) {
+		encode_key |= INST_IS_BRANCH_MASK;
+	}
+	if (inst.branch_taken) {
+		encode_key |= INST_BRANCH_TAKEN_MASK;
+	}
+	index = 2;
+	VG_(memcpy)(buffer + index, &inst.ip, 8);
+	index += 8;
+	uint32_t mask = DEST_REG_MASK;
+	for (int i = 0; i < NUM_INSTR_DESTINATIONS; i++) {
+		if(inst.destination_registers[i] != 0) {
+			encode_key |= mask;
+			mask = mask << 1;
+			VG_(memcpy)(buffer + index, &(inst.destination_registers[i]), 4);
+			index += 4;
+		}
+	}
+	
+	mask = DEST_MEM_MASK;
+	for (int i = 0; i < NUM_INSTR_DESTINATIONS; i++) {
+		
 		if (inst.d_valid[i]) {
-			VG_(memcpy)(buffer + index, &inst.destination_memory[i], 8);
+			encode_key |= mask;
+			mask = mask << 1;
+			VG_(memcpy)(buffer + index, &(inst.destination_memory[i]), 8);
 			index += 8;
-			VG_(memcpy)(buffer + index, &inst.d_value[i], 64);
+			VG_(memcpy)(buffer + index, &(inst.d_value[i]), 64);
 			index += 64;
-			inst.encode_key += ((0xfULL) << (32 + 4 * i));
 		}
 	}
-	for (int i = 0; i < 4; i++) {
+
+	mask = SOURCE_REG_MASK;
+	for (int i = 0; i < NUM_INSTR_SOURCES; i++) {
+		if(inst.source_registers[i] != 0) {
+			encode_key |= mask;
+			mask = mask << 1;
+			VG_(memcpy)(buffer + index, &(inst.source_registers[i]), 4);
+			index += 4;
+		}
+	}
+	mask = SOURCE_MEM_MASK;
+	for (int i = 0; i < NUM_INSTR_SOURCES; i++) {
 		if (inst.s_valid[i]) {
-			VG_(memcpy)(buffer + index, &inst.source_memory[i], 8);
+			encode_key |= mask;
+			mask = mask << 1;
+			VG_(memcpy)(buffer + index, &(inst.source_memory[i]), 8);
 			index += 8;
-			VG_(memcpy)(buffer + index, &inst.s_value[i], 64);
+			VG_(memcpy)(buffer + index, &(inst.s_value[i]), 64);
 			index += 64;
-			inst.encode_key += ((0xfULL) << (48 + 4 * i));
 		}
 	}
-	inst.encode_key = (((index - 8) & 0xffffffffULL) | inst.encode_key);
-	VG_(memcpy)(buffer, &inst.encode_key, 8);
+	tl_assert((encode_key & 0xffff0000U) == 0);
+	encode_key = encode_key & 0xffffU;
+	uint16_t encode_key_write = (uint16_t) encode_key;
+	//encode_key = (((index - 8) & 0xffffffffULL) | encode_key);
+	VG_(memcpy)(buffer, &encode_key_write, 2);
 	if (tracing) {
 		VG_(write)(fd, buffer, index);
 	}
@@ -601,12 +605,19 @@ static VG_REGPARM(0) void print_inst(void) {
 static VG_REGPARM(0) void inc_inst(void) {
 	//if (!tracing) { return; }
 	instructions++;
-	if (instructions == skip) {
+	
+	if(instructions % heartbeat == 0) {
+		VG_(printf)
+		("==%u== cstracer: Heartbeat : %llu instructions\n", pid, instructions);
+	}
+	
+	if (instructions == skip + 1) {
 		tracing = True;
 		VG_(printf)
-		("==%u== cstracer: Skipped %llu instructions\n", pid, instructions);
+		("==%u== cstracer: Skipped %llu instructions\n", pid, instructions-1);
 		VG_(printf)("==%u== cstracer: Starting Tracing\n", pid);
 	}
+
 	if (instructions == (skip + trace_instrs + 1)) {
 		tracing = False;
 		if (!tracing_done) {
@@ -629,20 +640,6 @@ static VG_REGPARM(0) void inc_inst(void) {
 		}
 	}
 }
-
-
-static void instrument_superblock(IRSB *sb, IRAtom *addr) {
-
-	if (trace_superblocks) {
-
-		IRDirty *di;
-		di = unsafeIRDirty_0_N(0, "trace_superblock",
-							   VG_(fnptr_to_fnentry)(&trace_superblock),
-							   mkIRExprVec_1(mkIRExpr_HWord((HWord)addr)));
-		addStmtToIRSB(sb, IRStmt_Dirty(di));
-	}
-}
-
 
 static void instrument_instruction(IRSB *sb, IRAtom *iaddr, UInt isize) {
 
@@ -815,7 +812,7 @@ static PIN_REG offset_to_x86_64_register(Int offset, Int sz) {
 			VG_(printf)(" ERROR:Register Not Yet supported %d\n", offset);
 		}
 		return 0;
-	} else if (offset < 208) {
+	} else if (offset < 144) {
 		switch ((offset - 16) / 8) {
 		case 0:
 			return REG_RAX;
@@ -850,33 +847,16 @@ static PIN_REG offset_to_x86_64_register(Int offset, Int sz) {
 		case 15:
 			return REG_R15;
 		}
-	} else if (offset < 176) {
-		if (PRINT_ERROR) {
-			VG_(printf)(" ERROR:Register Not Yet supported %d\n", offset);
-		}
-		return 0;
 	} else if (offset < 184) {
-		if (PRINT_ERROR) {
-			VG_(printf)(" ERROR:Register Not Yet supported %d\n", offset);
-		}
-		return 25;
+		return REG_RFLAGS;
 	} else if (offset < 192) {
 		return REG_RIP;
 	} else if (offset < 200) {
-		if (PRINT_ERROR) {
-			VG_(printf)(" ERROR:Register Not Yet supported %d\n", offset);
-		}
-		return 0;
+		return REG_RFLAGS;
 	} else if (offset < 208) {
-		if (PRINT_ERROR) {
-			VG_(printf)(" ERROR:Register Not Yet supported %d\n", offset);
-		}
-		return 0;
+		return	REG_SEG_FS;
 	} else if (offset < 216) {
-		if (PRINT_ERROR) {
-			VG_(printf)(" ERROR:Register Not Yet supported %d\n", offset);
-		}
-		return 0;
+		return REG_MXCSR;
 	} else if (offset < 728) {
 		switch ((offset - 216) / 32) {
 		case 0:
@@ -955,6 +935,8 @@ static void instrument_reg_read(IRSB *sb, Int offset, Int sz) {
 		return;
 #else
 	p = offset_to_x86_64_register(offset, sz);
+	if (p == 0 || p == REG_RIP )
+		return;
 #endif
 
 	IRExpr **argv = mkIRExprVec_1(mkIRExpr_HWord(p));
@@ -971,6 +953,8 @@ static void instrument_reg_write(IRSB *sb, Int offset, Int sz) {
 		return;
 #else
 	p = offset_to_x86_64_register(offset, sz);
+	if (p == 0 || p == REG_RIP )
+		return;
 #endif
 	IRExpr **argv = mkIRExprVec_1(mkIRExpr_HWord(p));
 	IRDirty *di   = unsafeIRDirty_0_N(
@@ -1061,8 +1045,6 @@ static IRSB *ct_instrument(VgCallbackClosure *closure, IRSB *sbIn,
 		i++;
 	}
 
-	instrument_superblock(sbOut, mkIRExpr_HWord((HWord)vge->base[0]));
-
 	for (/*use current i*/; i < sbIn->stmts_used; i++) {
 
 		IRStmt *st = sbIn->stmts[i];
@@ -1112,11 +1094,11 @@ static IRSB *ct_instrument(VgCallbackClosure *closure, IRSB *sbIn,
 									sizeofIRType(data->Iex.Get.ty));
 				break;
 			case Iex_GetI:
-				if (PRINT_ERROR) {
-					VG_(printf)("ERROR: GetI Not Yet Supported\n");
-				}
+				//if (PRINT_ERROR) {
+				//	VG_(printf)("ERROR: GetI Not Yet Supported\n");
+				//	ppIRStmt(st);
+				//}
 				/*Not supported as of now*/
-				ppIRStmt(st);
 				//tl_assert(0);
 				break;
 			default:
