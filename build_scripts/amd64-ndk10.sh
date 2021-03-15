@@ -47,4 +47,4 @@ make clean
 
 
 make -j4
-make -j4 install DESTDIR=`pwd`/Inst_x86_64
+make -j4 install DESTDIR=`pwd`/Inst-amd64

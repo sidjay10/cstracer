@@ -47,4 +47,4 @@ make clean
 
 
 make -j4
-make -j4 install DESTDIR=`pwd`/Inst
+make -j4 install DESTDIR=`pwd`/Inst-aarch64

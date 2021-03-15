@@ -26,5 +26,5 @@ make clean
 
 make clean
 
-make -j4
-make -j4 install
+make -j16
+make -j16 install
