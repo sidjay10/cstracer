@@ -1,14 +1,17 @@
-# Valgrind with cstracer
+# csTracer
 
 This repository contains a new Valgrind tool called "cstracer."
-cstracer generates traces for use with ChampSim
+cstracer that can generate traces of android applications running on 
+android-aarch64 and android-x86-64 architectures and without requiring access
+to their source code. The collected traces can be used for running simulations on 
+[ChampSim](https://github.com/ChampSim/ChampSim).
 
-Note: This tool is an EXPERIMENTAL PROTOTYPE used for research purposes.
-It's neither fast nor safe to use. You have been warned!
+Note: This tool is an experimental prototype used for research purposes.
 
-## Compiling
 
-### andorid aarch64
+# Compiling
+
+### android aarch64
 To build the cstracer tool for android aarch 64, 
 
 1. Install android ndk-10rc if not already done.
@@ -25,7 +28,7 @@ adb push Inst/ /data/local/tmp/
 adb shell export VALGRIND_LIB=/data/local/tmp/lib/valgrind/
 ~~~
 
-### andorid x86-64
+### android x86-64
 To build the cstracer tool for android x86-64, 
 
 1. Install android ndk-10rc if not already done.
@@ -61,6 +64,13 @@ To generate a trace for `EXECUTABLE`, run
 ~~~
 
 ### Android Application
+
+To trace android apps, you need to run an engineering build of android with these [patches](android_runtime_patches) applied.
+
+Disable jit on android by setting dalvik.vm.usejit=false and dalvik.vm.usejitprofiles=false in /default.prop on the android device.
+
+You also require an adb connection to the android device.
+
 To generate a trace for `APK`, run
 ~~~
 bash android_scripts/init.sh
@@ -73,6 +83,8 @@ bash android_scripts/run_apk.sh
 The traces are written to a file named /data/local/tmp/traces/trace_pid where pid is the pid of the process being traced. 
 The execution log is present in /data/local/tmp/vglogs/logs.pid where pid is the pid of the process being traced. 
 
+You can pull the traces using adb pull
+
 ### Android Executable
 To generate a trace for `EXECUTABLE`, run
 ~~~
@@ -80,18 +92,33 @@ bash android_scripts/init.sh
 adb shell /data/local/tmp/valgrind --tool=cstracer --trace-file=tracefile --trace=1000 --skip=10 EXECUTABLE EXECUTABLE_ARGS
 ~~~
 
-## Tool Options
+## Tool Options - csTracer
 
 `--trace-file=<filename>` The name of the output file  
 `--skip=<num>`	Number of initital instructions to skip  
 `--trace=<num>`	Number of instructions to trace  
+`--heartbeat=<num>` Instruction interval at which output is written to the log file  
 `--exit-after=<yes|no>` Halt execution after the tracing is completed
+
+## Tool Options - ctLite
+
+An auxiliary tool - ctlite is provided to collect more coarse grained information
+about programs.
+
+To use ctlite, set --tool=ctlite
+
+ctlite comes with the following options
+
+`--trace-file=<filename>` The name of the output file  
+`--heartbeat=<num>` Instruction interval at which output is written to the log file   
+`--mem-size=<num>` Log base 2 size of the memory window size. (For example, for a memory window size of 32KB, set `--mem-size=15`)  
+`--code-size=<num>` Log base 2 size of the code window size
 
 ## Notes
 
-1. Valgrind is not compatible with android version 10 (as of now) due to the introduction of execute only memory.
+1. To trace on android 10, execute only memory needs to be disabled. See [Execute Only Memory - source.android.com](https://source.android.com/devices/tech/debug/execute-only-memory)
 
-2. Running cstracer requires root privileges.
+2. Running valgrind on android to trace applications requires root privileges.
 
 ## Contact
 Author: Siddharth Jayashankar <sidjay@iitk.ac.in>
