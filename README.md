@@ -8,6 +8,8 @@ to their source code. The collected traces can be used for running simulations o
 
 Note: This tool is an experimental prototype used for research purposes.
 
+For more information about the kind of work that can be done with csTracer traces and champSim, you can check out this [presentation](https://docs.google.com/presentation/d/1ItN-Z4M6NXTQTMUEJOMCRhUswRGA3jiho9J-yJkvMzM/edit?usp=sharing).
+
 
 # Compiling
 
