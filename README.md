@@ -1,7 +1,7 @@
 # csTracer
 
 This repository contains a new Valgrind tool called "cstracer."
-cstracer that can generate traces of android applications running on 
+cstracer is a Valgrind tool that can generate traces of android applications running on 
 android-aarch64 and android-x86-64 architectures and without requiring access
 to their source code. The collected traces can be used for running simulations on 
 [ChampSim](https://github.com/ChampSim/ChampSim).
